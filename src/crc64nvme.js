@@ -281,7 +281,7 @@ export class Crc64Nvme {
     let crc = this.checksum;
 
     for (let i = 0; i < data.length; i++) {
-      const tableIndex = Number((crc ^ BigInt(data[i])) & 0xffn);
+      const tableIndex = Number(crc & 0xffn) ^ data[i];
       crc = (crc >> 8n) ^ CRC64_NVME_REVERSED_TABLE[tableIndex];
     }
 
