@@ -23,13 +23,13 @@ $ pnpm benchmark:crc64nvme
 ...
 
 CRC32NVME values returned for random buffer:
-* @aws-sdk/crc64-nvme-crt: URp3/lNbSBU=
-* Crc64Nvme              : URp3/lNbSBU=
-* Crc64Nvme2             : URp3/lNbSBU=
+* @aws-sdk/crc64-nvme-crt: b46VCwmeATI=
+* Crc64Nvme              : b46VCwmeATI=
+* Crc64Nvme2             : b46VCwmeATI=
 
 Benchmark:
-CrtCrc64Nvme x 942,009 ops/sec ±17.90% (67 runs sampled)
-Crc64Nvme x 29,465 ops/sec ±2.48% (90 runs sampled)
-Crc64Nvme2 x 92,237 ops/sec ±2.44% (96 runs sampled)
+CrtCrc64Nvme x 968,854 ops/sec ±17.66% (65 runs sampled)
+Crc64Nvme x 29,992 ops/sec ±0.66% (90 runs sampled)
+Crc64Nvme2 x 260,652 ops/sec ±23.80% (74 runs sampled)
 Fastest is CrtCrc64Nvme
 ```
