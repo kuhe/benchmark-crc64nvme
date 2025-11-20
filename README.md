@@ -10,7 +10,7 @@ Benchmark various CRC64NVME implementations on Node.js
   1. Verify that node is installed by running `node -v` in a terminal window and confirm that it shows Node.js >=24, such as `v24.11.0`).
   1. Enable corepack by running `corepack enable` in a terminal window.
 - Install dependencies by running `pnpm i`.
-- Run benchmark with `pnpm benchmark:crc64nvme`.
+- Run benchmark with `pnpm benchmark`.
 
 ## Setup
 
@@ -18,13 +18,19 @@ Benchmark various CRC64NVME implementations on Node.js
 $ node -v
 v24.11.1
 
-$ pnpm benchmark:crc64nvme
+$ pnpm benchmark
 
 ...
 
 Benchmark:
-CrtCrc64Nvme x 917,667 ops/sec ±18.08% (59 runs sampled)
-Crc64Nvme x 29,403 ops/sec ±2.46% (89 runs sampled)
-Crc64Nvme2 x 261,790 ops/sec ±22.49% (74 runs sampled)
+┌──────────────┬───────────────────┬────────────────────┬─────────┐
+│ Name         │ Average (ops/s)   │ Median (ops/s)     │ Samples │
+├──────────────┼───────────────────┼────────────────────┼─────────┤
+│ CrtCrc64Nvme │ 1,089,096 ± 0.08% │ 1,264,201 ± 69,123 │ 830,565 │
+├──────────────┼───────────────────┼────────────────────┼─────────┤
+│ Crc64Nvme    │    37,182 ± 0.04% │       37,442 ± 234 │  36,891 │
+├──────────────┼───────────────────┼────────────────────┼─────────┤
+│ Crc64Nvme2   │   129,250 ± 0.02% │       130,429 ± 17 │ 128,880 │
+└──────────────┴───────────────────┴────────────────────┴─────────┘
 Fastest is CrtCrc64Nvme
 ```

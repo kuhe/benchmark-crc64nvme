@@ -1,5 +1,6 @@
 import { CrtCrc64Nvme } from "@aws-sdk/crc64-nvme-crt";
-import benchmark from "benchmark";
+import { Bench, hrtimeNow } from "tinybench";
+import Table from "cli-table3";
 
 import { Crc64Nvme } from "./crc64nvme.js";
 import { Crc64Nvme2 } from "./crc64nvme-2.js";
@@ -10,15 +11,14 @@ const generateBuffer = (size) => {
   return buf;
 };
 
-const suite = new benchmark.Suite();
+const bench = new Bench({ name: "Benchmark:", now: hrtimeNow });
 const testBuffer = generateBuffer(1024);
 
 const crtCrc64NvmeObj = new CrtCrc64Nvme();
 const crc64NvmeObj = new Crc64Nvme();
 const crc64Nvme2Obj = new Crc64Nvme2();
 
-console.log(`Benchmark:`);
-suite
+bench
   .add("CrtCrc64Nvme", async () => {
     crtCrc64NvmeObj.update(testBuffer);
     await crtCrc64NvmeObj.digest();
@@ -33,12 +33,52 @@ suite
     crc64Nvme2Obj.update(testBuffer);
     await crc64Nvme2Obj.digest();
     crc64Nvme2Obj.reset();
-  })
-  .on("cycle", (event) => {
-    console.log(String(event.target));
-  })
-  .on("complete", () => {
-    console.log("Fastest is " + suite.filter("fastest").map("name"));
-  })
-  // run sync
-  .run({ async: false });
+  });
+
+try {
+  await bench.run();
+
+  const table = new Table({
+    head: ["Name", "Average (ops/s)", "Median (ops/s)", "Samples"],
+    style: { head: ["bold"] },
+  });
+
+  const formatNumber = (num) => Intl.NumberFormat().format(Math.round(num));
+
+  bench.tasks.forEach((task) => {
+    if (!task.result) return;
+    table.push([
+      task.name,
+      {
+        hAlign: "right",
+        content: `${formatNumber(
+          task.result.throughput.mean
+        )} \xb1 ${task.result.throughput.rme.toFixed(2)}%`,
+      },
+      {
+        hAlign: "right",
+        content: `${formatNumber(
+          task.result.throughput.p50
+        )} \xb1 ${formatNumber(Math.round(task.result.throughput.mad))}`,
+      },
+      {
+        hAlign: "right",
+        content: formatNumber(task.result.latency.samples.length),
+      },
+    ]);
+  });
+
+  console.log(bench.name);
+  console.log(table.toString());
+
+  const fastest = [...bench.tasks]
+    .filter((task) => task.result?.throughput?.mean)
+    .sort((a, b) => b.result.throughput.mean - a.result.throughput.mean)[0];
+
+  if (fastest) {
+    console.log(`Fastest is ${fastest.name}`);
+  }
+} catch (error) {
+  console.error("Benchmark failed:", error);
+  process.exit(1);
+}
